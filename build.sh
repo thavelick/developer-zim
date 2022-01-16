@@ -1,26 +1,40 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
-build_root=build
-python_root=$build_root/python
-python_version=3.10.2
-python_folder=python-$python_version-docs-html
-archive=$python_folder.tar.bz2
-mkdir -p $build_root
+function genrate_zim() {
+    doc_root=$build_root/$doc_name
 
-if [ ! -d $python_root ]; then
-    mkdir $python_root
-    curl -sfL https://docs.python.org/3/archives/$archive -o $python_root/$archive
-    tar -xf $python_root/$archive -C $python_root
-    curl -sfL https://python.org/favicon.ico -o $python_root/$python_folder/favicon.ico
+    [ -d $doc_root ] && return
+    mkdir $doc_root
+    curl -sfL https://docs.python.org/3/archives/$archive -o $doc_root/$archive
+    cd $doc_root
+    dtrx $doc_root/$archive 
+    cd $project_root
+    curl -sfL $favicon_url -o $doc_root/$doc_folder/favicon.ico
     zimwriterfs \
         --welcome=index.html \
         --favicon=favicon.ico \
         --language=eng \
-        --title="Python $python_version Documentation" \
-        --description="Developer  Documentation for Python $python_version" \
-        --creator="Python Software Foundation" \
+        --title="$formal_name $doc_version Documentation" \
+        --description="Developer  Documentation for $formal_name $doc_version" \
+        --creator="$creator" \
         --publisher="Tristan Havelick" \
-        $python_root/$python_folder \
-        $build_root/python-$python_version.zim
-fi
+        $doc_root/$doc_folder \
+        $build_root/python-$doc_version.zim
+}
+
+project_root=$(pwd)
+build_root=$project_root/build
+mkdir -p $build_root
+
+doc_name=python
+formal_name=Python
+creator="Python Software Foundation"
+doc_version=3.10.2
+doc_folder=python-$doc_version-docs-html
+archive=$doc_folder.tar.bz2
+download_url=https://docs.python.org/3/archives/$archive 
+favicon_url=https://python.org/favicon.ico
+
+genrate_zim
+
