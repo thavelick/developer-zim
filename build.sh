@@ -67,16 +67,22 @@ function generate_mdn_zim() {
     doc_version=$(date +%F) # Isn't versioned, so just use the date 
     favicon_url=https://developer.mozilla.org/favicon.ico
     doc_root=$build_root/$doc_name
-    git_root=$doc_root/mdn-content
-    doc_folder="mdn-content/build/en-us/docs/web"
+    git_content_root=$doc_root/content
+    git_yari_root=$doc_root/yari
+    doc_folder="yari/client/build"
 
     echo "building zim file for $formal_name..."
     make_folder
-    [ ! -d "$git_root" ] && echo "cloning..." git clone -q --depth 1 https://github.com/mdn/content "$git_root"
-    cd "$git_root"
-    [ ! -d "$git_root/build" ] && echo "building..." && yarn -s && yarn -s build
+    [ ! -d "$git_content_root" ] && echo "cloning content..." && git clone -q --depth 1 https://github.com/mdn/content "$git_content_root"
+    [ ! -d "$git_yari_root" ] && echo "cloning yari..." && git clone -q --depth 1 https://github.com/mdn/yari "$git_yari_root"
+    cd "$git_yari_root"
+    if [ ! -d "$git_yari_root/client/build" ]; then
+        echo "building yari..." 
+        yarn 
+        yarn prepare-build
+        CONTENT_ROOT="$git_content_root/files" yarn build
+    fi
     cd "$project_root"
-    fetch_favicon
     write_zim_file
 }
 
