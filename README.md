@@ -4,16 +4,16 @@ for use offline with  kiwix
 
 ## Prerequisites needed
 * zim-tools
-* nvm
 * dtrx
-* yarn
 
 ## Usage
 ./build.sh
 
 ## Included Documentation 
-* Python 3.10 
-
+(currently uses specific versions, but they are easily adjustable)
+* Python
+* Flask
+* SqlAlchemy
 
 ## Useful, precompiled from elsewhere
 * MDN
